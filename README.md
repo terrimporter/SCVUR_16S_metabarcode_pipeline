@@ -1,6 +1,6 @@
 # README
 
-This repository outlines how 16S rDNA metabarcodes are processed by Teresita M. Porter. **SCVUS** refers to the programs, algorithms, and reference datasets used in this data flow: **S**EQPREP, **C**UTADAPT, **V**SEARCH, **U**SEARCH-UNOISE, **R**DP Classifier. 
+This repository outlines how 16S rDNA metabarcodes are processed by Teresita M. Porter. **SCVUR** refers to the programs, algorithms, and reference datasets used in this data flow: **S**EQPREP, **C**UTADAPT, **V**SEARCH, **U**SEARCH-UNOISE, **R**DP Classifier. 
 
 The pipeline begins with raw Illumina MiSeq fastq.gz files with paired-end reads.  Reads are paired.  Primers are trimmed.  All the samples are pooled for a global analysis.  Reads are dereplicated and denoised producing a reference set of exact sequence variants (ESVs).  These ESVs are taxonomically assigned using the 16S reference set available with the RDP Classifier (Wang et al., 2007) available from https://sourceforge.net/projects/rdp-classifier/ .
 
