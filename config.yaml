@@ -1,0 +1,112 @@
+# Configuration file for SCVURv2
+
+# Author: Teresita M. Porter
+# Date: Sept. 27, 2019
+
+############################################################################
+# General pipeline settings
+############################################################################
+
+# Number of cores available to run pipeline taken from command line
+# snakemake --jobs 10
+#jobs: "10"
+
+############################################################################
+# Identify raw read files
+############################################################################
+
+# This directory contains raw reads (all of them or from just one run)
+# Only use compressed fastq files with this pipeline, ex. fastq.gz
+# For the standard pipeline, call the directory "data"
+raw: "data"
+
+# Indicate 'sample' and 'read' wildcards in raw filenames:
+# These files should be in a "data" or "run1", etc. folder
+# Sample filename structure,
+# 	SITE-CONDITION-REPLICATE_S1_L001_R1_001.fastq.gz
+# 	{sample}_L001_R{read}_001.fastq.gz
+raw_sample_read_wildcards: "data/{sample}_L001_R{read}_001.fastq.gz"
+
+# SEQPREP sample wildcard and parameters
+# These files should be in a "data" or "run1", etc. folder
+# Sample,
+#	{sample}_L001_R1_001.fastq.gz
+raw_sample_forward_wildcard: "data/{sample}_L001_R1_001.fastq.gz"
+raw_sample_reverse_wildcard: "data/{sample}_L001_R2_001.fastq.gz"
+
+############################################################################
+# Raw read pairing
+############################################################################
+
+SEQPREP:
+# Phred score quality cutoff
+    q: 20
+# Minimum overlap length between forward and reverse reads
+    o: 25
+
+############################################################################
+# Primer trimming
+############################################################################
+
+# CUTADAPT parameters
+CUTADAPT_FWD:
+    g: "GTGYCAGCMGCCGCGGTAA"
+    m: 150
+    q: "20,20"
+    mn: 3
+
+CUTADAPT_REV:
+    a: "AAACTYAAAKRAATTGRCGG"
+    m: 150
+    q: "20,20"
+    mn: 3
+
+
+############################################################################
+# Dereplication
+############################################################################
+
+# Indicate a directory name here that is short and simple with no spaces or weird punctuation
+# For the standard pipeline, a good directory name would be the amplicon, ex. "18Sv4"
+dir: "16Sv4v5"
+
+# VSEARCH params
+VSEARCH:
+# Indicate number of threads to use
+# Do not exceed the number of jobs allotted to run the whole pipeline ('jobs' above)
+    t: 24
+
+
+############################################################################
+# Denoising
+############################################################################
+
+# Indicate minimum number of reads per cluster to retain
+# Here, remove all singletons and doubletons, retain clusters with 3+ reads
+
+USEARCH:
+    minsize: 3
+
+############################################################################
+# Taxonomic assignment
+############################################################################
+
+# Uses the RDP classifier
+# Do not use old RDP classifier v2.2 from conda, install the newer v2.12 from SourceForge https://sourceforge.net/projects/rdp-classifier/
+
+RDP:
+    jar: "/path/to/rdp_classifier_2.12/dist/classifier.jar"
+    c: 0
+    g: "fixrank"
+    f: "16srrna"
+
+############################################################################
+# Reformat CSV
+############################################################################
+
+# Add amplicon name to Zotu to keep these ids unique when data from many amplicons are combined
+# The pattern will prefix the Zotu with the amplicon name
+# Ex. sed -e 's/^/amplicon_/g' infile > outfile
+# Below, enter the substitution pattern for sed to use (the part in single quotes above)
+
+SED: 's/^/16Sv4v5_/g'
