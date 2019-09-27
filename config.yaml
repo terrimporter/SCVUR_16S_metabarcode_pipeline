@@ -67,7 +67,7 @@ CUTADAPT_REV:
 ############################################################################
 
 # Indicate a directory name here that is short and simple with no spaces or weird punctuation
-# For the standard pipeline, a good directory name would be the amplicon, ex. "18Sv4"
+# For the standard pipeline, a good directory name would be the amplicon, ex. "16Sv4v5"
 dir: "16Sv4v5"
 
 # VSEARCH params
