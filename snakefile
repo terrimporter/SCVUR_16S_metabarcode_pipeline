@@ -68,9 +68,9 @@ vsearch_out2=dir+"/ESV.table"
 vsearch_log2=dir+"/table.log"
 
 # 7_Taxonomic assignment
-rdp_out=dir+"/rdp.out"
-rdp_csv=dir+"/rdp.csv"
-rdp_csv2=dir+"/rdp.csv2"
+rdp_out=dir+"/rdp.out.tmp"
+rdp_csv=dir+"/rdp.csv.tmp"
+rdp_csv2=dir+"/rdp.csv"
 
 #######################################################################
 # This rule defines the final target file that is needed from the pipeline
@@ -329,7 +329,7 @@ rule taxonomic_assignment:
 	input:
 		usearch_out
 	output:
-		rdp_out
+		temp(rdp_out)
 	shell:
 		"java -Xmx8g -jar {config[RDP][jar]} classify -c {config[RDP][c]} -f {config[RDP][f]} -g {config[RDP][g]} -o {output} {input}"
 	
@@ -343,7 +343,7 @@ rule map_read_number:
 		table=vsearch_out2,
 		rdp=rdp_out
 	output:
-		rdp_csv
+		temp(rdp_csv)
 	shell:
 		"perl perl_scripts/add_abundance_to_rdp_out4.plx {input.table} {input.rdp} > {output}"
 
