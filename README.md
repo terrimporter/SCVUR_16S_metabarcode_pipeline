@@ -64,14 +64,13 @@ mv usearch11.0.667_i86linux32 usearch11
 
 3. The pipeline also requires the RDP classifier for the taxonomic assignment step.  Although the RDP classifier v2.2 is available through conda, a newer v2.12 is available form SourceForge at https://sourceforge.net/projects/rdp-classifier/ .  Download it and take note of where the classifier.jar file is as this needs to be added to config.yaml .
 
-The RDP classifier comes with the training sets to classify 16S, fungal ITS and fungal LSU rDNA sequences.  Take note of where the rRNAclassifier.properties file is as this needs to be added to the config.yaml .
+The RDP classifier comes with the training sets to classify 16S (default), fungal ITS and fungal LSU rDNA sequences.  Take note of where the rRNAclassifier.properties file is as this needs to be added to the config.yaml .
 
 ```linux
 RDP:
     jar: "/path/to/rdp_classifier_2.12/dist/classifier.jar"
 	c: 0
 	f: "fixrank"
-	g: "16srrna"
 ```
 
 4. In most cases, your raw paired-end Illumina reads can go into a directory called 'data' which should be placed in the same directory as the other files that come with this pipeline.
