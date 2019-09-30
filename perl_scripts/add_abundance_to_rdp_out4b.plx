@@ -1,8 +1,7 @@
 #!/path/to/miniconda3/envs/myenv/bin/perl
-# Teresita M. Porter, August, 21, 2019
-# Script to add read abundance from ESV.table to rdp.out
-# Prints to STDOUT so redirect to a file in snakemake
-# USAGE perl add_abundance_to_rdp_out4.plx ESV.table rdp.out > outfile
+# Script to add read abundance from ESV.table to rdp.csv.tmp
+# Accomodates taxonomic assignments to genus rank only, includes Domain rank, excludes Kingdom rank
+# USAGE perl add_abundance_to_rdp_out4b.plx ESV.table rdp.csv.tmp > outfile
 
 use strict;
 use warnings;
@@ -16,7 +15,6 @@ my $otu;
 my $j=0;
 my $sample;
 my $abund;
-my $outfile = "rdp.csv";
 my $idline;
 my $seqID;
 
@@ -94,8 +92,7 @@ while ($table[$i]) {
 $i=0;
 
 #loop through hash of hashes, if OTU abund >= 3 keep and append taxonomic assignment, print out new assignment report
-#open (OUT, ">>", $outfile) || die "Error cannot open outfile : $!\n";
-print STDOUT "GlobalESV,SampleName,ESVsize,Strand,Root,RootRank,rBP,SuperKingdom,SuperKingdomRank,skBP,Kingdom,KingdomRank,kBP,Phylum,PhylumRank,pBP,Class,ClassRank,cBP,Order,OrderRank,oBP,Family,FamilyRank,fBP,Genus,GenusRank,gBP,Species,SpeciesRank,sBP\n";
+print STDOUT "GlobalESV,SampleName,ESVsize,Strand,Domain,DomainRank,dBP,Phylum,PhylumRank,pBP,Class,ClassRank,cBP,Order,OrderRank,oBP,Family,FamilyRank,fBP,Genus,GenusRank,gBP\n";
 
 #add read abundance to rdp out as a new column, unmap here!
 while (($global_otu, $assignment) = each %assignment) {
@@ -125,5 +122,3 @@ while (($global_otu, $assignment) = each %assignment) {
                 print "Cannot find global_otu $global_otu in table\n";
         }
 }
-
-#close OUT;
