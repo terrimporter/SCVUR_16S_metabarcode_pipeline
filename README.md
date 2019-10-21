@@ -10,6 +10,8 @@ This data flow has been developed using a conda environment and snakemake pipeli
 
 [Standard pipeline](#standard-pipeline) 
 
+[Alternate pipeline](#alternate-pipeline) 
+
 [Implementation notes](#implementation-notes)  
 
 [References](#references)  
@@ -101,6 +103,72 @@ snakemake --jobs 24 --snakefile snakefile --configfile config.yaml
 ```
 
 When you are done, deactivate the conda environment:
+
+```linux
+conda deactivate
+```
+
+## Alternate pipeline
+
+This section describes modification to the standard pipeline described above when you get a message from 32-bit USEARCH that you have exceeded memory availble.  Instead of processing all the reads in one go, you can denoise each run on its own to keep file sizes small.
+
+1. Instead of putting all raw read files in a directory called 'data', put them in their own directories according to run, ex. run1.  Edit the 'dir' variable in the config_alt_1.yaml file as follows:
+
+```linux
+raw: "run1"
+```
+
+2. The output directory also needs to be edited in the config_alt_1.yaml file:
+
+```linux
+dir: "run1_out"
+```
+
+3. Please go through the config_alt_1.yaml file and edit directory names, filename patterns, etc. as necessary to work with your filenames.
+
+4. Run snakemake with the first alternate snakefile as follows, be sure to indicate the number of jobs/cores available to run the whole pipeline.
+
+```linux
+snakemake --jobs 24 --snakefile snakefile_alt_1 --configfile config_alt.yaml
+```
+
+5. Run steps 1-4 for each run directory, ex. run1, run2, run3, etc.
+
+6. Combine and dereplicate the denoised ESVs from each run and put them in a directory named after the amplicon, for example:
+
+```linux
+# Make new directory
+mkdir 16Sv4v5
+
+# Combine the denoised ESVs from each run
+cat run1_out/cat.denoised run2_out/cat.denoised run3_out/cat.denoised > 16Sv4v5/cat.denoised.tmp
+
+# Dereplicate the denoised ESVs
+vsearch --derep_fulllength 16Sv4v5/cat.denoised.tmp --output 16Sv4v5/cat.denoised --sizein --sizeout --log 16Sv4v5/derep.log
+```
+
+7. Combine the primer trimmed reads frmo each run and put them in a directory named after the amplicon, for example:
+
+```linux
+# Combine the primer trimmed reads from each run
+cat run1_out/cat.fasta.gz run2_out/cat.fasta.gz run3_out/cat.fasta.gz > 16Sv4v5/cat.fasta.gz
+```
+
+7. Edit the config.yaml 'dir' variable and the 'SED' variable, leave the rest of the variables as is (most of them won't be used here anyways):
+
+```linux
+dir: "16Sv4v5"
+...
+SED: 's/^/16Sv4v5_/g'
+```
+
+8. Continue with the second alternate snakelake pipeline, be sure to edit the number of jobs/cores available to run the whole pipeline.
+
+```linux
+snakemake --jobs 24 --snakefile snakefile_alt_2 --configfile config.yaml
+```
+
+9. When you are done, deactivate the conda environment:
 
 ```linux
 conda deactivate
