@@ -151,7 +151,7 @@ vsearch --derep_fulllength 16Sv4v5/cat.denoised.tmp --output 16Sv4v5/cat.denoise
 
 ```linux
 # Combine the primer trimmed reads from each run
-cat run1_out/cat.fasta2.gz run2_out/cat.fasta.gz run3_out/cat.fasta2.gz > 16Sv4v5/cat.fasta.gz
+cat run1_out/cat.fasta2.gz run2_out/cat.fasta2.gz run3_out/cat.fasta2.gz > 16Sv4v5/cat.fasta2.gz
 ```
 
 7. Edit the config.yaml 'dir' variable and the 'SED' variable, leave the rest of the variables as is (most of them won't be used here anyways):
