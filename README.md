@@ -140,6 +140,11 @@ snakemake --jobs 24 --snakefile snakefile_alt_1 --configfile config_alt.yaml
 # Make new directory
 mkdir 16Sv4v5
 
+# Add version number to denoised sequence headers to keep them unique after denoised data from each run is combined
+sed 's/>Zotu[[:digit:]]\{1,6\}/&.1/g' run1_out/cat.denoised > run1_out/cat.denoised1
+sed 's/>Zotu[[:digit:]]\{1,6\}/&.2/g' run2_out/cat.denoised > run2_out/cat.denoised2
+sed 's/>Zotu[[:digit:]]\{1,6\}/&.3/g' run3_out/cat.denoised > run3_out/cat.denoised3
+
 # Combine the denoised ESVs from each run
 cat run1_out/cat.denoised run2_out/cat.denoised run3_out/cat.denoised > 16Sv4v5/cat.denoised.tmp
 
