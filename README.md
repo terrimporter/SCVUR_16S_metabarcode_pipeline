@@ -66,7 +66,7 @@ mv usearch11.0.667_i86linux32 usearch11
 
 3. The pipeline also requires the RDP classifier for the taxonomic assignment step.  Although the RDP classifier v2.2 is available through conda, a newer v2.12 is available form SourceForge at https://sourceforge.net/projects/rdp-classifier/ .  Download it and take note of where the classifier.jar file is as this needs to be added to config.yaml .
 
-The RDP classifier comes with the training sets to classify 16S (default), fungal ITS and fungal LSU rDNA sequences.  Take note of where the rRNAclassifier.properties file is as this needs to be added to the config.yaml .
+The RDP classifier comes with the training sets to classify 16S (default), fungal ITS and fungal LSU rDNA sequences.
 
 ```linux
 RDP:
