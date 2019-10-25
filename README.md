@@ -199,6 +199,35 @@ cd ~/bin
 ln -s miniconda3/bin/conda conda
 ```
 
+### Check program versions
+
+Ensure that the correct programs from the environment are being used.
+
+```linux
+# create conda environment from file
+conda env create -f environment.yml
+
+# activate the environment
+conda activate myenv
+
+# list all programs available in the environment at once
+conda list > programs.list
+
+# or, inidivdually check that key programs in the conda environment are being used
+which SeqPrep
+which cutadapt
+which vsearch
+which perl
+
+# then, check their version numbers one at a time
+cutadapt --version
+vsearch --version
+```
+
+Version numbers are also tracked in the snakefile.
+
+Note that commercial software (ex. USEARCH) and programs not available from conda (ex. ORFfinder) need to be installed on your system and executable in your PATH (see [Standard pipeline](#standard-pipeline) "Prepare your environment to run the pipeline").
+
 ### Batch renaming of files
 
 Sometimes it is necessary to rename large numbers of sequence files.  I prefer to use Perl-rename (Gergely, 2018) that is available at https://github.com/subogero/rename as opposed to linux rename.  I prefer the Perl implementation so that you can easily use regular expressions.  I first run the command with the -n flag so you can review the changes without making any actual changes.  If you're happy with the results, re-run without the -n flag.
