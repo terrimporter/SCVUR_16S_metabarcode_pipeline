@@ -146,7 +146,7 @@ sed 's/>Zotu[[:digit:]]\{1,6\}/&.2/g' run2_out/cat.denoised > run2_out/cat.denoi
 sed 's/>Zotu[[:digit:]]\{1,6\}/&.3/g' run3_out/cat.denoised > run3_out/cat.denoised3
 
 # Combine the denoised ESVs from each run
-cat run1_out/cat.denoised run2_out/cat.denoised run3_out/cat.denoised > 16Sv4v5/cat.denoised.tmp
+cat run1_out/cat.denoised1 run2_out/cat.denoised2 run3_out/cat.denoised3 > 16Sv4v5/cat.denoised.tmp
 
 # Dereplicate the denoised ESVs
 vsearch --derep_fulllength 16Sv4v5/cat.denoised.tmp --output 16Sv4v5/cat.denoised --sizein --sizeout --log 16Sv4v5/derep.log
