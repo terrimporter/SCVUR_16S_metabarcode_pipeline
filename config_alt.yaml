@@ -18,21 +18,21 @@
 # This directory contains raw reads (all of them or from just one run)
 # Only use compressed fastq files with this pipeline, ex. fastq.gz
 # For the alternate pipeline, call the directory "run1", "run2", etc.
-raw: "run1"
+raw: "run2"
 
 # Indicate 'sample' and 'read' wildcards in raw filenames:
 # These files should be in a "run2" or "run2", etc. folder
 # Sample filename structure,
 # 	SITE-CONDITION-REPLICATE_S1_L001_R1_001.fastq.gz
 # 	{sample}_L001_R{read}_001.fastq.gz
-raw_sample_read_wildcards: "run1/{sample}_L001_R{read}_001.fastq.gz"
+raw_sample_read_wildcards: "run2/{sample}_L001_R{read}_001.fastq.gz"
 
 # SEQPREP sample wildcard and parameters
 # These files should be in a "run2" or "run2", etc. folder
 # Sample,
 #	{sample}_L001_R1_001.fastq.gz
-raw_sample_forward_wildcard: "run1/{sample}_L001_R1_001.fastq.gz"
-raw_sample_reverse_wildcard: "run1/{sample}_L001_R2_001.fastq.gz"
+raw_sample_forward_wildcard: "run2/{sample}_L001_R1_001.fastq.gz"
+raw_sample_reverse_wildcard: "run2/{sample}_L001_R2_001.fastq.gz"
 
 ############################################################################
 # Raw read pairing
@@ -68,7 +68,7 @@ CUTADAPT_REV:
 
 # Indicate a directory name here that is short and simple with no spaces or weird punctuation
 # For the alternate pipeline, a good directory name would be the run number, ex. "run1_out"
-dir: "run1_out"
+dir: "run2_out"
 
 # VSEARCH params
 VSEARCH:
