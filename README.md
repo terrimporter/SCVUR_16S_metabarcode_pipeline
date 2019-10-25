@@ -226,7 +226,7 @@ vsearch --version
 
 Version numbers are also tracked in the snakefile.
 
-Note that commercial software (ex. USEARCH) and programs not available from conda (ex. ORFfinder) need to be installed on your system and executable in your PATH (see [Standard pipeline](#standard-pipeline) "Prepare your environment to run the pipeline").
+Note that commercial software (ex. USEARCH) and programs not available from conda need to be installed on your system and executable in your PATH (see [Standard pipeline](#standard-pipeline) "Prepare your environment to run the pipeline").
 
 ### Batch renaming of files
 
