@@ -112,7 +112,7 @@ rule all:
 		expand(Rtrimmed_stats_out, sample=SAMPLES_UNIQUE),
 		cat_Rtrimmed_stats_out,
 		# 2_Trim reads (edit fasta header)
-#		expand(concatenate_pattern, sample=SAMPLES)
+#		expand(concatenate_pattern, sample=SAMPLES_UNIQUE)
 		# 3_Concatenate samples for global analysis
 #		output
 		# 3_Concatenate samples for global analysis (edit fasta header)
