@@ -1,7 +1,7 @@
 # Configuration file for SCVURv2
 
 # Author: Teresita M. Porter
-# Date: Sept. 27, 2019
+# Date: Oct. 25, 2019
 
 ############################################################################
 # General pipeline settings
@@ -97,8 +97,7 @@ USEARCH:
 RDP:
     jar: "/path/to/rdp_classifier_2.12/dist/classifier.jar"
     c: 0
-    g: "fixrank"
-    f: "16srrna"
+    f: "fixrank"
 
 ############################################################################
 # Reformat CSV
