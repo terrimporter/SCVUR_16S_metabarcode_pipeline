@@ -2,7 +2,9 @@
 
 This repository outlines how 16S rDNA metabarcodes are processed by Teresita M. Porter. **SCVUR** refers to the programs, algorithms, and reference datasets used in this data flow: **S**EQPREP, **C**UTADAPT, **V**SEARCH, **U**SEARCH-UNOISE, **R**DP Classifier. 
 
-The pipeline begins with raw Illumina MiSeq fastq.gz files with paired-end reads.  Reads are paired.  Primers are trimmed.  All the samples are pooled for a global analysis.  Reads are dereplicated and denoised producing a reference set of exact sequence variants (ESVs).  These ESVs are taxonomically assigned using the 16S reference set available with the RDP Classifier (Wang et al., 2007) available from https://sourceforge.net/projects/rdp-classifier/ .
+## Overview
+
+This pipeline begins with raw paired-end Illumina MiSeq fastq.gz files.  Reads are paired.  Primers are trimmed.  All the samples are pooled for a global analysis.  Reads are dereplicated and denoised producing a reference set of exact sequence variants (ESVs).  These ESVs are taxonomically assigned using the 16S reference set available with the RDP Classifier (Wang et al., 2007) available from https://sourceforge.net/projects/rdp-classifier/ .
 
 This data flow has been developed using a conda environment and snakemake pipeline for improved reproducibility.  It will be updated on a regular basis so check for the latest version at https://github.com/terrimporter/SCVUR_16S_metabarcode_pipeline/releases
 
@@ -10,21 +12,15 @@ This data flow has been developed using a conda environment and snakemake pipeli
 
 [Standard pipeline](#standard-pipeline) 
 
-[Alternate pipeline](#alternate-pipeline) 
-
 [Implementation notes](#implementation-notes)  
 
 [References](#references)  
 
 [Acknowledgements](#acknowledgements)  
 
-## Standard pipeline
+## Pipeline details
 
-### Overview of the standard pipeline
-
-If you are comfortable reading code, read through the snakefile to see how the pipeline runs, and which programs and versions are used.
-
-#### A brief overview:
+If you are comfortable reading code, read through the snakefile to see how the pipeline runs as well as which programs and versions are used. Otherwise you can just list all the programs in the conda environment, see [Implementation notes](#implementation-notes). 
 
 Raw paired-end reads are merged using SEQPREP v1.3.2 from bioconda (St. John, 2016).  This step looks for a minimum Phred quality score of 20 in the overlap region, requires at least 25bp overlap.
 
@@ -34,7 +30,7 @@ Files are reformatted and samples are combined for a global analysis.
 
 Reads are dereplicated (only unique sequences are retained) using VSEARCH v2.13.6 from bioconda (Rognes et al., 2016).
 
-Denoised exact sequence variants (ESVs) are generated using USEARCH v11.0.667 with the unoise3 algorithm (Edgar, 2016).  This step removes any PhiX contamination, putative chimeric sequences, sequences with predicted errors, and rare sequences.  This step produces zero-radius OTUs (Zotus) also referred to commonly as amplicon sequence variants (ASVs), ESVs, or 100% operational taxonomic unit (OTU) clusters.  Here, we define rare sequences to be sequence clusters containing only one or two reads (singletons and doubletons) and these are removed as 'noise'.
+Denoised exact sequence variants (ESVs) are generated using VSEARCH with the unoise3 algorithm (Edgar, 2016).  This step removes any PhiX contamination, sequences with predicted errors, and rare sequences.  This step also produces zero-radius OTUs (Zotus) also referred to commonly as amplicon sequence variants (ASVs), ESVs, or 100% operational taxonomic unit (OTU) clusters.  Here, we define rare sequences to be sequence clusters containing only one or two reads (singletons and doubletons) and these are removed as 'noise'.  Putative chimeric sequences are then removed using the uchime3_denovo algorithm in VSEARCH.
 
 An ESV table that tracks read number for each ESV in each sample is generated with VSEARCH.
 
@@ -53,18 +49,10 @@ Read and ESV statistics are provided for various steps of the program are also p
 conda env create -f environment.yml
 
 # Activate the environment
-conda activate myenv
-```
-2. The pipeline requires commercial software for the denoising step.  A free 32-bit version of USEARCH v11.0.667 can be obtained from https://drive5.com/usearch/download.html .  Be sure to put the program in your PATH, ex. ~/bin .  Make it executable and rename it to simply usearch11.
-
-```linux
-mv usearch11.0.667_i86linux32 ~/bin/.
-cd ~/bin
-chmod 755 usearch11.0.667_i86linux32
-mv usearch11.0.667_i86linux32 usearch11
+conda activate myenv.3
 ```
 
-3. The pipeline also requires the RDP classifier for the taxonomic assignment step.  Although the RDP classifier v2.2 is available through conda, a newer v2.12 is available form SourceForge at https://sourceforge.net/projects/rdp-classifier/ .  Download it and take note of where the classifier.jar file is as this needs to be added to config.yaml .
+2. The pipeline also requires the RDP classifier for the taxonomic assignment step.  Although the RDP classifier v2.2 is available through conda, a newer v2.12 is available form SourceForge at https://sourceforge.net/projects/rdp-classifier/ .  Download it and take note of where the classifier.jar file is as this needs to be added to config.yaml .
 
 The RDP classifier comes with the training sets to classify 16S (default), fungal ITS and fungal LSU rDNA sequences.
 
@@ -75,26 +63,26 @@ RDP:
 	f: "fixrank"
 ```
 
-4. In most cases, your raw paired-end Illumina reads can go into a directory called 'data' which should be placed in the same directory as the other files that come with this pipeline.
+3. In most cases, your raw paired-end Illumina reads can go into a directory called 'data' which should be placed in the same directory as the other files that come with this pipeline.
 
 ```linux
 # Create a new directory to hold your raw data
 mkdir data
 ```
 
-5. Please go through the config.yaml file and edit directory names, filename patterns, etc. as necessary to work with your filenames.
+4. Please go through the config.yaml file and edit directory names, filename patterns, etc. as necessary to work with your filenames.
 
-6. Be sure to edit the first line of each Perl script (shebang) in the perl_scripts directory to point to where Perl is installed.
+5. Be sure to edit the first line of each Perl script (shebang) in the perl_scripts directory to point to where Perl is installed.
 
 ```linux
 # The usual shebang if you already have Perl installed
 #!/usr/bin/perl
 
 # Alternate shebang if you want to run perl using the conda environment (edit this)
-#!/path/to/miniconda3/envs/myenv/bin/perl
+#!/path/to/miniconda3/envs/myenv.3/bin/perl
 ```
 
-### Run the standard pipeline
+### Run the pipeline
 
 Run snakemake by indicating the number of jobs or cores that are available to run the whole pipeline.  
 
@@ -103,77 +91,6 @@ snakemake --jobs 24 --snakefile snakefile --configfile config.yaml
 ```
 
 When you are done, deactivate the conda environment:
-
-```linux
-conda deactivate
-```
-
-## Alternate pipeline
-
-This section describes modification to the standard pipeline described above when you get a message from 32-bit USEARCH that you have exceeded memory availble.  Instead of processing all the reads in one go, you can denoise each run on its own to keep file sizes small.
-
-1. Instead of putting all raw read files in a directory called 'data', put them in their own directories according to run, ex. run1.  Edit the 'dir' variable in the config_alt_1.yaml file as follows:
-
-```linux
-raw: "run1"
-```
-
-2. The output directory also needs to be edited in the config_alt_1.yaml file:
-
-```linux
-dir: "run1_out"
-```
-
-3. Please go through the config_alt_1.yaml file and edit directory names, filename patterns, etc. as necessary to work with your filenames.
-
-4. Run snakemake with the first alternate snakefile as follows, be sure to indicate the number of jobs/cores available to run the whole pipeline.
-
-```linux
-snakemake --jobs 24 --snakefile snakefile_alt_1 --configfile config_alt.yaml
-```
-
-5. Run steps 1-4 for each run directory, ex. run1, run2, run3, etc.
-
-6. Combine and dereplicate the denoised ESVs from each run and put them in a directory named after the amplicon, for example:
-
-```linux
-# Make new directory
-mkdir 16Sv4v5
-
-# Add version number to denoised sequence headers to keep them unique after denoised data from each run is combined
-sed 's/>Zotu[[:digit:]]\{1,6\}/&.1/g' run1_out/cat.denoised > run1_out/cat.denoised1
-sed 's/>Zotu[[:digit:]]\{1,6\}/&.2/g' run2_out/cat.denoised > run2_out/cat.denoised2
-sed 's/>Zotu[[:digit:]]\{1,6\}/&.3/g' run3_out/cat.denoised > run3_out/cat.denoised3
-
-# Combine the denoised ESVs from each run
-cat run1_out/cat.denoised1 run2_out/cat.denoised2 run3_out/cat.denoised3 > 16Sv4v5/cat.denoised.tmp
-
-# Dereplicate the denoised ESVs
-vsearch --derep_fulllength 16Sv4v5/cat.denoised.tmp --output 16Sv4v5/cat.denoised --sizein --sizeout --log 16Sv4v5/derep.log
-```
-
-7. Combine the primer trimmed reads frmo each run and put them in a directory named after the amplicon, for example:
-
-```linux
-# Combine the primer trimmed reads from each run
-cat run1_out/cat.fasta2.gz run2_out/cat.fasta2.gz run3_out/cat.fasta2.gz > 16Sv4v5/cat.fasta2.gz
-```
-
-7. Edit the config.yaml 'dir' variable and the 'SED' variable, leave the rest of the variables as is (most of them won't be used here anyways):
-
-```linux
-dir: "16Sv4v5"
-...
-SED: 's/^/16Sv4v5_/g'
-```
-
-8. Continue with the second alternate snakelake pipeline, be sure to edit the number of jobs/cores available to run the whole pipeline.
-
-```linux
-snakemake --jobs 24 --snakefile snakefile_alt_2 --configfile config.yaml
-```
-
-9. When you are done, deactivate the conda environment:
 
 ```linux
 conda deactivate
@@ -267,4 +184,4 @@ Wang, Q., Garrity, G. M., Tiedje, J. M., & Cole, J. R. (2007). Naive Bayesian Cl
 
 I would like to acknowedge funding from the Canadian government through the Genomics Research and Development Initiative (GRDI) EcoBiomics project.
 
-Last updated: October 21, 2019
+Last updated: January 9, 2020
