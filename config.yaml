@@ -1,7 +1,7 @@
-# Configuration file for SCVURv2
+# Configuration file for SCVURv3
 
 # Author: Teresita M. Porter
-# Date: Oct. 25, 2019
+# Date: Jan. 9, 2020
 
 ############################################################################
 # General pipeline settings
@@ -49,6 +49,8 @@ SEQPREP:
 ############################################################################
 
 # CUTADAPT parameters
+# 515F-Y 16Sv4v5 forward prokaryote primer (Parada et al., 2015)
+# 926R 16Sv4v5 reverse prokaryote primer (Parada et al., 2015)
 CUTADAPT_FWD:
     g: "GTGYCAGCMGCCGCGGTAA"
     m: 150
@@ -70,13 +72,6 @@ CUTADAPT_REV:
 # For the standard pipeline, a good directory name would be the amplicon, ex. "16Sv4v5"
 dir: "16Sv4v5"
 
-# VSEARCH params
-VSEARCH:
-# Indicate number of threads to use
-# Do not exceed the number of jobs allotted to run the whole pipeline ('jobs' above)
-    t: 24
-
-
 ############################################################################
 # Denoising
 ############################################################################
@@ -84,8 +79,18 @@ VSEARCH:
 # Indicate minimum number of reads per cluster to retain
 # Here, remove all singletons and doubletons, retain clusters with 3+ reads
 
-USEARCH:
+VSEARCH_DENOISE:
     minsize: 3
+
+############################################################################
+# ESV x sample table
+############################################################################
+
+# VSEARCH params
+VSEARCH_TABLE:
+# Indicate number of threads to use
+# Do not exceed the number of jobs allotted to run the whole pipeline ('jobs' above)
+    t: 24
 
 ############################################################################
 # Taxonomic assignment
@@ -95,7 +100,7 @@ USEARCH:
 # Do not use old RDP classifier v2.2 from conda, install the newer v2.12 from SourceForge https://sourceforge.net/projects/rdp-classifier/
 
 RDP:
-    jar: "/path/to/rdp_classifier_2.12/dist/classifier.jar"
+    jar: "/path/tto/rdp_classifier_2.12/dist/classifier.jar"
     c: 0
     f: "fixrank"
 

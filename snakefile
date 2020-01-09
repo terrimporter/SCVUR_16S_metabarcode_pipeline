@@ -1,4 +1,4 @@
-""" SCVUR v2 16S metabarcode pipeline
+""" SCVUR v3 16S metabarcode pipeline
 
 Metabarcode pipeline to process Illumina MiSeq reads as follows:
 
@@ -6,12 +6,10 @@ Metabarcode pipeline to process Illumina MiSeq reads as follows:
 2_Trim reads
 3_Concatenate samples for global analysis
 4_Dereplicate reads
-5_Create denoised ESVs
-6_Create ESV table
-7_Taxonomic assignment
-
-Note:
-If you get a memory error at the USEARCH unoise3 denoising step, then use the 16S alternate metabarcode pipeline instead.
+5_Denoise ESVs
+6_Remove chimeras
+7_Create ESV x sample table
+8_Taxonomic assignment
 
 """
 
@@ -65,25 +63,28 @@ output2=dir+"/cat.fasta2"
 gzip_out=dir+"/cat.fasta2.gz"
 
 # 4_Dereplicate reads
-vsearch_out=dir+"/cat.uniques"
-vsearch_log=dir+"/dereplication.log"
+dereplicate_out=dir+"/cat.uniques"
+dereplicate_log=dir+"/dereplication.log"
 
 # 5_Create denoised ESVs
-usearch_out=dir+"/cat.denoised"
-usearch_log=dir+"/usearch.log"
+denoise_out=dir+"/cat.denoised"
+denoise_log=dir+"/usearch.log"
 
-# 6_Create ESV table
-vsearch_out2=dir+"/ESV.table"
-vsearch_log2=dir+"/table.log"
+# 6_Chimera check
+chimera_out=dir+"/cat.denoised.nonchimeras"
+chimera_log=dir+"/chimeraRemoval.log"
 
-# 7_Taxonomic assignment
+# 7_Create ESV table
+table_out=dir+"/ESV.table"
+table_log=dir+"/table.log"
+
+# 8_Taxonomic assignment
 rdp_out=dir+"/rdp.out.tmp"
 rdp_csv=dir+"/rdp.csv.tmp"
 rdp_csv2=dir+"/rdp.csv"
 
 #######################################################################
 # This rule defines the final target file that is needed from the pipeline
-# This is normally step 7 (rdp_csv2) but could also be step 5 (usearch_out)
 # Hashed lines (begin with # symbol) are not executed
 # Target files need to be separated with a comma
 # Snakemake looks at all input and output files to determine which rules need to be run to create the target file
@@ -92,8 +93,8 @@ rule all:
 	input:
 		# Rule testing [In order of execution]:
 		# Calculate raw stats
-		expand(raw1_stats_out, sample=SAMPLES_UNIQUE),
-		expand(raw2_stats_out, sample=SAMPLES_UNIQUE),
+#		expand(raw1_stats_out, sample=SAMPLES_UNIQUE),
+#		expand(raw2_stats_out, sample=SAMPLES_UNIQUE),
 		cat_raw1_stats_out,
 		cat_raw2_stats_out,
 		# 1_Pair reads
@@ -120,16 +121,18 @@ rule all:
 		# 3_Concatenate samples for global analysis (compress file)
 #		gzip_out
 		# 4_Dereplicate reads
-#		vsearch_out
+#		dereplicate_out
 		# 5_Denoise reads
-#		usearch_out
-		# 6_Create ESV table
-#		vsearch_out2
-		# 7_Taxonomic assignment
+#		denoise_out
+		# 6_Chimera check
+#		chimera_out
+		# 7_Create ESV table
+#		table_out
+		# 8_Taxonomic assignment
 #		rdp_out
-		# 7_Taxonomic assignment (add read numbers)
+		# 8_Taxonomic assignment (add read numbers)
 #		rdp_csv
-		# 7_Taxonomic assignment (edit ESV id's to include amplicon name) [Final output file]
+		# 8_Taxonomic assignment (edit ESV id's to include amplicon name) [Final output file]
 		rdp_csv2
 	 
 #######################################################################
@@ -223,7 +226,7 @@ rule cat_paired_stats:
 # Trim forward primer with CUTADAPT
 
 rule trim_forward_primer:
-	version: "2.4"
+	version: "2.6"
 	input:
 		seqprep_out
 	output:
@@ -259,7 +262,7 @@ rule cat_Ftrimmed_stats:
 # Trim reverse primer with CUTADAPT
 
 rule trim_reverse_primer:
-	version: "2.4"
+	version: "2.6"
 	input:
 		cutadapt_f_out
 	output:
@@ -344,44 +347,55 @@ rule compress:
 # Dereplicate and track reads with VSEARCH
 
 rule dereplicate:
-	version: "2.13.6"
+	version: "2.14.1"
 	input:
 		gzip_out
 	output:
-		vsearch_out
-	log: vsearch_log
+		dereplicate_out
+	log: dereplicate_log
 	shell:
 		"vsearch --derep_fulllength {input} --output {output} --sizein --sizeout --log {log}"
 	
 #######################################################################
-# Denoise with USEARCH
-# Make sure this is installed locally and in your PATH
-# I changed the default name of the program to 'usearch11' to be more concise
+# Denoise with VSEARCH using unoise3 algorithm (chimera removal must be done separately in next step)
 
 rule denoise:
-	version: "11.0.667_i86linux32"
+	version: "2.14.1"
 	input:
-		vsearch_out
+		dereplicate_out
 	output:
-		usearch_out
-	log: usearch_log
+		denoise_out
+	log: denoise_log
 	shell:
-		"usearch11 -unoise3 {input} -zotus {output} -minsize {config[USEARCH][minsize]} > {log} 2>&1"
+		"vsearch --cluster_unoise {input} --sizein --sizeout --minsize {config[VSEARCH_DENOISE][minsize]} --centroids {output} --log {log}"
+
+#######################################################################
+# Chimera removal with VSEARCH using uchime_denovo3 algorithm
+
+rule chimera_removal:
+	version: "2.14.1"
+	input:
+		denoise_out
+	output:
+		chimera_out
+	log: chimera_log
+	shell:
+		"vsearch --uchime3_denovo {input} --sizein --xsize --nonchimeras {output} --relabel 'Zotu' --log {log}"
 	
 #######################################################################
 # Create ESV table
 
 rule create_ESV_table:
-	version: "2.13.16"
+	version: "2.14.1"
 	input:
-		usearch_global=gzip_out,
-		db=usearch_out
+		vsearch_global=gzip_out,
+		db=chimera_out
 	output:
-		vsearch_out2
-	threads: config["VSEARCH"]["t"]
-	log: vsearch_log2
+		table_out
+	threads: config["VSEARCH_TABLE"]["t"]
+	log: table_log
 	shell:
-		"vsearch --threads {threads} --usearch_global {input.usearch_global} --db {input.db} --id 1.0 --otutabout {output} --log {log}"
+		"vsearch --threads {threads} --usearch_global {input.vsearch_global} --db {input.db} --id 1.0 --otutabout {output} --log {log}"
 
 #######################################################################
 # Taxonomic assignment
@@ -393,7 +407,7 @@ rule create_ESV_table:
 rule taxonomic_assignment:
 	version: "2.12"
 	input:
-		usearch_out
+		chimera_out
 	output:
 		temp(rdp_out)
 	shell:
@@ -406,7 +420,7 @@ rule taxonomic_assignment:
 
 rule map_read_number:
 	input:
-		table=vsearch_out2,
+		table=table_out,
 		rdp=rdp_out
 	output:
 		temp(rdp_csv)
