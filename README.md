@@ -36,7 +36,7 @@ Primer trimmed reads (cat.fasta2.gz) are mapped to the denoised ESVs (cat.denois
 
 16S taxonomic assignments are made using the Ribosomal Database classifier v2.12 (RDP classifier) available from https://sourceforge.net/projects/rdp-classifier/ (Wang et al., 2007).
 
-The final output is reformatted to add read numbers from the ESV.table for each sample and column headers to improve readability (rdp.csv).  This final output file, rdp.csv, contains all ESVs for each sample, associated read counts, as well as taxonomic assignments with bootstrap support values.  rdp.csv can be read into R for further data analysis, the table can be reshaped to plot ESVs x samples (read number) for further analyses.
+The final output is reformatted to add read numbers from the ESV.table for each sample and column headers to improve readability (rdp.csv).  This final output file, rdp.csv, contains all ESVs for each sample, associated read counts, as well as taxonomic assignments with bootstrap support values.  rdp.csv can be read into R where the table can be filtered, reformatted, then reshaped to create a matrix of ESVs x samples containing read numbers to conduct standard biodiversity analyses.
 
 Read and ESV statistics are provided for various steps of the program are also provided.
 
