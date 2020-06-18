@@ -32,11 +32,11 @@ Reads are dereplicated (only unique sequences are retained) using VSEARCH v2.13.
 
 Denoised exact sequence variants (ESVs) are generated using VSEARCH with the unoise3 algorithm (Edgar, 2016).  This step removes any PhiX contamination, sequences with predicted errors, and rare sequences.  This step also produces zero-radius OTUs (Zotus) also referred to commonly as amplicon sequence variants (ASVs), ESVs, or 100% operational taxonomic unit (OTU) clusters.  Here, we define rare sequences to be sequence clusters containing only one or two reads (singletons and doubletons) and these are removed as 'noise'.  Putative chimeric sequences are then removed using the uchime3_denovo algorithm in VSEARCH.
 
-An ESV table that tracks read number for each ESV in each sample is generated with VSEARCH.
+Primer trimmed reads (cat.fasta2.gz) are mapped to the denoised ESVs (cat.denoised.nonchimeras) in VSEARCH using the --search_exact method (ESV.table).
 
 16S taxonomic assignments are made using the Ribosomal Database classifier v2.12 (RDP classifier) available from https://sourceforge.net/projects/rdp-classifier/ (Wang et al., 2007).
 
-The final output is reformatted to add read numbers for each sample and column headers to improve readability.
+The final output is reformatted to add read numbers from the ESV.table for each sample and column headers to improve readability (rdp.csv).  This final output file contains all ESVs for each sample, associated read counts, as well as taxonomic assignments with bootstrap support values.  rdp.csv can be read into R for further data analysis, the table can be reshaped to plot ESVs x samples (read number) for further analyses.
 
 Read and ESV statistics are provided for various steps of the program are also provided.
 
@@ -184,4 +184,4 @@ Wang, Q., Garrity, G. M., Tiedje, J. M., & Cole, J. R. (2007). Naive Bayesian Cl
 
 I would like to acknowedge funding from the Canadian government through the Genomics Research and Development Initiative (GRDI) EcoBiomics project.
 
-Last updated: January 9, 2020
+Last updated: June 18, 2020
