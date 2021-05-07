@@ -27,7 +27,7 @@ This data flow has been developed using a conda environment and snakemake pipeli
 ## How to cite
 
 You can cite this repository directly:  
-SCVUR 16S Metabarcode Pipeline, DOI: 10.5281/zenodo.4741499. 
+Teresita M. Porter. (2019, January 23). SCVUR 16S Metabarcode Pipeline (Version v3.0.2). Zenodo. http://doi.org/10.5281/zenodo.4741499  
 
 ## Pipeline details
 
