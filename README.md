@@ -1,5 +1,7 @@
 # README
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4741499.svg)](https://doi.org/10.5281/zenodo.4741499)  
+
 **This pipeline has been replaced with MetaWorks: A flexible, scalable bioinformatic pipeline for multi-marker biodiversity assessments available from https://github.com/terrimporter/MetaWorks**
 
 This repository outlines how 16S rDNA metabarcodes are processed by Teresita M. Porter. **SCVUR** refers to the programs, algorithms, and reference datasets used in this data flow: **S**EQPREP, **C**UTADAPT, **V**SEARCH, **U**SEARCH-UNOISE, **R**DP Classifier. 
@@ -12,6 +14,8 @@ This data flow has been developed using a conda environment and snakemake pipeli
 
 ## Outline
 
+[How to cite](#How-to-cite)  
+
 [Standard pipeline](#standard-pipeline) 
 
 [Implementation notes](#implementation-notes)  
@@ -19,6 +23,11 @@ This data flow has been developed using a conda environment and snakemake pipeli
 [References](#references)  
 
 [Acknowledgements](#acknowledgements)  
+
+## How to cite
+
+You can cite this repository directly:  
+SCVUR 16S Metabarcode Pipeline, DOI: 10.5281/zenodo.4741499. 
 
 ## Pipeline details
 
@@ -186,4 +195,4 @@ Wang, Q., Garrity, G. M., Tiedje, J. M., & Cole, J. R. (2007). Naive Bayesian Cl
 
 I would like to acknowedge funding from the Canadian government through the Genomics Research and Development Initiative (GRDI) EcoBiomics project.
 
-Last updated: July 16, 2020
+Last updated: May 6, 2021
